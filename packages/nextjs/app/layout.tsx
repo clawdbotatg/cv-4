@@ -8,8 +8,8 @@ import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 
 export const metadata = getMetadata({
-  title: 'Scaffold-ETH 2 App',
-  description: 'Built with 🏗 Scaffold-ETH 2'
+  title: "CLAWD Stake V2",
+  description: "Lock CLAWD tokens and earn 5% yield with a 180-day lock. Tiered staking on Base."
 });
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
