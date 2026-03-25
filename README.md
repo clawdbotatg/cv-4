@@ -2,9 +2,11 @@
 
 Tiered staking contract for CLAWD token on Base. Lock CLAWD tokens and earn 5% yield with a 180-day lock.
 
-**Contract:** `0x8410d83faf78313967160b7a45d315cbe66380b2` on Base (chain ID 8453)  
+**Contract:** `0x69da2c1f63242c256f2131c86039bb02ab19881d` on Base (chain ID 8453)  
 **CLAWD Token:** `0x9F86d2b6FC636C93727614d7e3D959c9dAeDEa67`  
 **Owner:** `0x34aA3F359A9D614239015126635CE7732c18fDF3`
+
+> v1 (`0x8410d83faf78313967160b7a45d315cbe66380b2`) was replaced after deep contract audit — owner can no longer reduce stakeAmount.
 
 ## Tiers
 
@@ -35,18 +37,23 @@ bgipfs upload out --config ~/.bgipfs/credentials.json
 
 ## Architecture
 
-- `contracts/CLAWDStakeV2.sol` — single tiered staking contract
+- `contracts/CLAWDStakeV2.sol` — single tiered staking contract (219 lines)
 - OpenZeppelin: `Ownable2Step`, `ReentrancyGuard`, `SafeERC20`
 - CEI pattern on all state-changing functions
 - House reserve pre-funded by owner; yield + burn pulled at unstake
+- `stakeAmount` can only increase (cannot be reduced) — protects active stakers
 
 ## Contracts
 
 | Contract | Address |
 |----------|---------|
-| CLAWDStakeV2 | `0x8410d83faf78313967160b7a45d315cbe66380b2` |
+| CLAWDStakeV2 (v2) | `0x69da2c1f63242c256f2131c86039bb02ab19881d` |
 | CLAWD Token | `0x9F86d2b6FC636C93727614d7e3D959c9dAeDEa67` |
 
 ## Security
 
-Audited using ethskills.com audit methodology. 6 checklists applied (general, precision-math, ERC20, staking, access-control, DoS). 37 Foundry tests passing. No critical/high/medium findings.
+Audited using ethskills.com audit methodology. Two audit passes:
+1. Standard audit: 6 checklists (general, precision-math, ERC20, staking, access-control, DoS) — 5 INFO findings
+2. Deep audit (Pashov methodology): 1 MEDIUM finding fixed — owner can no longer reduce stakeAmount
+
+37 Foundry tests passing. No critical/high/medium findings remaining.

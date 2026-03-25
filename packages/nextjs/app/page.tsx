@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useAccount, useChainId, useSwitchChain } from "wagmi";
+import { useAccount, useChainId, useSwitchChain, useReadContract } from "wagmi";
 import { base } from "viem/chains";
 import type { NextPage } from "next";
 import { formatEther } from "viem";
@@ -14,7 +14,6 @@ const YIELD_PCT = 5;
 const BASE_CHAIN_ID = base.id;
 
 const CONTRACT_ADDRESS = (deployedContracts as any)[BASE_CHAIN_ID]?.CLAWDStakeV2?.address || "0x8410d83faf78313967160b7a45d315cbe66380b2";
-const CLAWD_TOKEN = "0x9F86d2b6FC636C93727614d7e3D959c9dAeDEa67";
 
 const Home: NextPage = () => {
   const { address: connectedAddress, isConnected } = useAccount();
@@ -42,11 +41,11 @@ const Home: NextPage = () => {
     functionName: "houseReserve",
   });
 
-  // ── Read CLAWD allowance (for connected user) ──
-  const { data: allowance, refetch: refetchAllowance } = useScaffoldReadContract({
-    contractName: "CLAWDStakeV2",
+  // ── Read CLAWD allowance (ERC20 token) ──
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
+    address: "0x9F86d2b6FC636C93727614d7e3D959c9dAeDEa67",
     functionName: "allowance",
-    args: [connectedAddress, CONTRACT_ADDRESS],
+    args: [connectedAddress!, CONTRACT_ADDRESS],
     query: { enabled: !!connectedAddress },
   });
 
@@ -165,9 +164,6 @@ const Home: NextPage = () => {
 
           // 4-state button logic
           const isLoading = (isStakingTx || isApprovingTx) && pendingTier === i;
-          const canStake = isConnected && !isWrongNetwork && !needsApproval && availableSlots > 0;
-          const canApprove = isConnected && !isWrongNetwork && needsApproval && availableSlots > 0;
-          const canSwitch = isConnected && isWrongNetwork;
           const disabled = !isConnected || availableSlots === 0 || isLoading;
 
           let button: React.ReactNode = null;
