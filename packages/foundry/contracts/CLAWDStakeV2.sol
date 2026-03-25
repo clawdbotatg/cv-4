@@ -181,6 +181,8 @@ contract CLAWDStakeV2 is Ownable2Step, ReentrancyGuard {
         Tier storage tier = tiers[tierIndex];
         // maxSlots must be >= usedSlots to not break existing stakes
         require(maxSlots >= tier.usedSlots, "maxSlots < usedSlots");
+        // stakeAmount can only increase — prevents owner from reducing tier value
+        require(stakeAmount >= tier.stakeAmount, "stakeAmount can only increase");
 
         tier.stakeAmount = stakeAmount;
         tier.maxSlots = maxSlots;
